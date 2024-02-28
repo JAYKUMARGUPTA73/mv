@@ -154,7 +154,7 @@ const Addmovies = () => {
         <input type="text" value={Trailer_url} onChange={(e) => setTrailerUrl(e.target.value)} />
 
         <button type="button" onClick={handleSignup} disabled={loading}>
-          {loading ? 'Signing up...' : 'Signup'}
+          {loading ? 'Adding movies...' : 'Add movies'}
         </button>
 
         {signupSuccess && <p className="success-message">Signup successful!</p>}

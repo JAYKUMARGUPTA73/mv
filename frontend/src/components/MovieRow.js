@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import MovieCard from './MovieCard';
+import { useNavigate } from "react-router-dom";
+import Nav from "react-bootstrap/Nav";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const[isMatched,setIsmatched]=useState(false);
+  const navigate = useNavigate();
+  // const [isSearching, setIsSearching] = useState(false);
 
   // Define an array of genres
   const genres = [
@@ -18,14 +23,15 @@ const HomePage = () => {
     if (searchQuery.trim() === '') {
       // If search query is empty, show default homepage
       setSearchResults([]);
-      setIsSearching(false);
+      setIsmatched(false);
+      // setIsSearching(false);
       return;
     }
 
     // Call backend API to search for movies
     try {
       console.log(`search=${searchQuery}`)
-      setIsSearching(true);
+      // setIsSearching(true);
       const response = await fetch("http://localhost:4000/searchMovies",{
         method :'POST',
         headers: {
@@ -33,14 +39,18 @@ const HomePage = () => {
         },
         body: JSON.stringify({movieString:searchQuery}),
       });
-      const data = await response.json();
-      setSearchResults(data.movies);
-      console.log("movies"+searchResults)      
+      if(response.ok){
+        const data = await response.json();
+        setIsmatched(true);
+        setSearchResults(data.movies);
+        if(searchResults.length==0){
+          setIsmatched(false);
+        }
+      }
+      console.log(searchResults)      
     } catch (error) {
       console.error('Error searching for movies:', error);
       // Handle error
-    } finally {
-      setIsSearching(false);
     }
   };
 
@@ -58,8 +68,25 @@ const HomePage = () => {
         <button onClick={handleSearch}>Search</button>
       </div>
 
-      {/* Display search results or default homepage */}
-        <div>
+      
+      {isMatched?<div>
+          {/* Display default homepage */}
+          {searchResults.map((movie, index) => (
+            <Nav key={movie}>
+            <div style={styles.card}>
+              <Nav.Link as={Link} to={`/movies/${movie._id}`}>
+                <img src={movie.M_url} alt={movie.Mname} style={styles.image} />
+              </Nav.Link>
+              <div style={styles.details}>
+                <h3 style={styles.title}>{movie.Mname}</h3>
+                <p style={styles.genre}>Genre: {movie.genre_ids}</p>
+                <p style={styles.rating}>Rating: {movie.rating}</p>
+                {/* <button onClick={() => addWatchList(movie._id)}>Add To WatchList</button> */}
+              </div>
+            </div>
+          </Nav>
+          ))}
+        </div>:<div>
           {/* Display default homepage */}
           {genres.map((genre, index) => (
             <div key={index} style={styles.genreSection}>
@@ -67,7 +94,7 @@ const HomePage = () => {
               <MovieCard genre={genre} /> {/* Pass genre as a prop to MovieCard */}
             </div>
           ))}
-        </div>
+        </div>}
       
     </div>
   );

@@ -17,9 +17,15 @@ const Signin = ({ handleLogin }) => {
       if (user && user.role === "user") {
         // Redirect to the home page for regular users
         navigate("/");
+        setTimeout(function() {
+          window.location.href = window.location.href;
+      }, 100);
       } else if (user && user.role === "admin") {
         // Redirect to the admin page for admin users
         navigate("/");
+        setTimeout(function() {
+          window.location.href = window.location.href;
+      }, 100);
       } else {
         // Handle unexpected user data or role
         console.error("Unexpected user data or role");

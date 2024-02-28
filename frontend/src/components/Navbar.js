@@ -5,27 +5,34 @@ import Nav from "react-bootstrap/Nav";
 import ProfilePage from "./ProfileSection";
 
 function Navcomp({ userId, profileUrl, role }) {
-  const [uid, setUid] = useState(""); // Initialize with an empty string
+  const [uid, setUid] = useState(userId);
   const [isLoggedInCookie, setIsLoggedInCookie] = useState(false);
 
   useEffect(() => {
     const checkCookies = () => {
       const cookies = document.cookie;
+      // console.log(cookies);
 
+      // Example: Check for a cookie named "Login"
       if (!cookies.includes("Login")) {
+        // Cookie not present, handle accordingly (prevent fetching user profile)
         console.error("Cookies are not present");
         setIsLoggedInCookie(false);
+        return;
       } else {
         setIsLoggedInCookie(true);
+        // console.log("Cookies found");
       }
 
+      // Assuming 'userId' is a prop passed to the component
       if (userId) {
-        setUid(userId); // Update uid when userId changes
+        setUid(userId);
       }
     };
 
+    // Call the function to check cookies when userId changes
     checkCookies();
-  }, [userId]); // Trigger effect when userId changes
+  }, [userId]);
 
   return (
     <Navbar expand="lg" variant="dark" bg="dark">
@@ -73,7 +80,7 @@ function Navcomp({ userId, profileUrl, role }) {
                 </Nav.Link>
               </>
             )}
-            {isLoggedInCookie && profileUrl && uid && (
+            {isLoggedInCookie && profileUrl && uid &&(
               <Dropdown align="end" className="profile-dropdown">
                 <Dropdown.Toggle variant="link" id="profile-dropdown-toggle">
                   <img
